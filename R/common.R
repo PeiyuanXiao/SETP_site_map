@@ -12,7 +12,6 @@ sf::sf_use_s2(FALSE)
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
 proj_dir   <- here::here()
-## OUTPUT_DIR, if set by the caller, redirects all output
 output_dir <- if (exists("OUTPUT_DIR")) OUTPUT_DIR else file.path(proj_dir, "output", "maps")
 cache_dir  <- file.path(proj_dir, "data", "cache", "plateau")
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
@@ -20,20 +19,18 @@ dir.create(cache_dir,  showWarnings = FALSE, recursive = TRUE)
 
 site_csv   <- file.path(proj_dir, "data", "sites.csv")
 
-utm47 <- "EPSG:32647"             # panel B
+utm47 <- "EPSG:32647"             
 
 ## ---- relief --------------------------------------------------------------
-sun_angle     <- 35               # sun elevation (deg)
-sun_dirs      <- c(300, 337, 15)  # light azimuths, averaged
-relief_hi     <- 0.42             # pull toward white on lit faces
-relief_lo     <- 0.38             # pull toward black in shadow
+sun_angle     <- 35               
+sun_dirs      <- c(300, 337, 15)  
+relief_hi     <- 0.42             
+relief_lo     <- 0.38            
 warm_gain     <- 0.10
 cool_gain     <- 0.20
-hyps_strength <- 0.72             # blend of the ramp toward paper_col
+hyps_strength <- 0.72             
 
 ## ---- palette -------------------------------------------------------------
-## hypsometric ramp on fixed elevation knots (m): an elevation has the same
-## colour on every map
 hyps_cols  <- c("#7E8E74", "#93A184", "#A9B195", "#BFBCA4",
                 "#D1C9B3", "#DCD4C1", "#E6DECB")
 hyps_knots <- c(0, 600, 1500, 2600, 3800, 4800, 6200)
@@ -49,19 +46,15 @@ pt_scale        <- 5.5
 pt_north        <- 6.5
 pt_legend       <- 5.5
 pt_legend_title <- 6
-label_size  <- pt_label / ggplot2::.pt   # geom_text size is in mm
-furniture_k <- 0.6                # needle and scale-bar size
+label_size  <- pt_label / ggplot2::.pt
+furniture_k <- 0.6
 
 ## ---- composite geometry --------------------------------------------------
-## Both panels are comp_height_mm tall and together comp_width_mm wide, with
-## comp_gutter_mm between them; placed at 100 % their type and borders match.
-## Re-solve comp_height_mm if the frames or type sizes change.
 comp_width_mm  <- 180
 comp_gutter_mm <- 4
 comp_height_mm <- 75.17
 
 ## ---- site classes --------------------------------------------------------
-## Black-ringed circles filled by assemblage class, in legend order.
 site_types <- data.frame(
   assemblage = c("Handaxe technology", "Denisovan", "Middle Paleolithic",
                  "Blade technology", "Microblade technology",
@@ -71,15 +64,11 @@ site_types <- data.frame(
   fill       = c("#D55E00", "#AA3377", "#0072B2", "#F0E442", "#7B4B2A", "#009E73"))
 sym_size   <- if (exists("SYM_SIZE")) SYM_SIZE else 2.1   # geom_point size
 sym_stroke <- 0.45
-## printed diameter, ring included (2.05 mm at size 2.1)
 sym_diam_mm <- 2.05 * (sym_size * ggplot2::.pt + sym_stroke * ggplot2::.stroke / 2) /
                       (2.1      * ggplot2::.pt + sym_stroke * ggplot2::.stroke / 2)
-## spacing of packed symbols, as a fraction of the diameter (< 1: overlapping)
 pack_spacing <- if (exists("PACK_SPACING")) PACK_SPACING else 0.6
 
 ## ---- sites ---------------------------------------------------------------
-## coordinates come as D°M′S″, decimal degrees or D°M.mmm′: read the numbers
-## in each as degrees, minutes, seconds
 parse_coord <- function(x) vapply(as.character(x), function(s) {
   n <- as.numeric(regmatches(s, gregexpr("[0-9]+(\\.[0-9]+)?", s))[[1]])
   sum(n / 60^(seq_along(n) - 1))
@@ -98,8 +87,6 @@ sites$type <- factor(sites$type, levels = site_types$type)
 sites <- st_as_sf(sites, coords = c("lon", "lat"), crs = 4326, remove = FALSE)
 
 ## ---- frames and data -----------------------------------------------------
-## A lon/lat box projected to `crs`: its bounding rectangle, and the lon/lat box
-## (plus `pad` deg) that covers it, for downloads.
 make_frame <- function(frame_ll, crs, pad = 0.05) {
   n  <- 200
   xs <- seq(frame_ll[["xmin"]], frame_ll[["xmax"]], length.out = n)
@@ -133,7 +120,6 @@ cop30_mosaic <- function(bb) {
 }
 
 ## Copernicus GLO-90 for a frame, warped by GDAL straight onto its projected
-## `res` m grid (reading the tile overviews where they suffice)
 cop90_warp <- function(fr, res, out) {
   lst <- file.path(cache_dir, "cop90_tileList.txt")
   if (!file.exists(lst))
@@ -264,7 +250,6 @@ dem_channels <- function(dem_h, tag, min_km2, smooth = 0) {
 }
 
 ## ---- relief shading ------------------------------------------------------
-## the ramp colours as painted: blended toward `to`
 blend_to <- function(cols, to, k) {
   a <- grDevices::col2rgb(cols) / 255; b <- as.numeric(grDevices::col2rgb(to)) / 255
   m <- a * k + b * (1 - k)
@@ -307,9 +292,6 @@ hillshade01 <- function(dem, z_exag, aggregate = 1, despeckle = TRUE) {
 }
 
 ## RGB raster (r, g, b) of the shaded relief: the hillshade moves the HSL
-## lightness of the hypsometric tint, warm on lit faces, cool in shadow.
-## `supersample` > 1 shades the fine grid and averages it down; `coarse_weight`
-## blends in a hillshade of the averaged DEM for the broad landforms.
 shade_relief <- function(dem, z_exag, cols = hyps_cols, knots = hyps_knots,
                          strength = hyps_strength, supersample = 1, despeckle = TRUE,
                          coarse_weight = 0, coarse_exag = z_exag) {
