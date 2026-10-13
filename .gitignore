@@ -1,0 +1,25 @@
+# R / RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+Rplots.pdf
+
+# Rebuilt on the first run: DEM tiles, WhiteboxTools intermediates, Natural Earth
+data/cache/
+
+# Third-party plateau boundary, not redistributed (see README)
+data/DBATP/
+
+# Script output; regenerate with the scripts in R/
+output/
+
+# Working files kept out of the repository: the Illustrator assembly and its
+# export, the placed globe image, the original spreadsheet
+local/
+*.ai
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
