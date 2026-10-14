@@ -18,6 +18,8 @@ output/
 # export, the placed globe image, the original spreadsheet
 local/
 *.ai
+!assets/illustrator/
+!assets/illustrator/*.ai
 
 # OS
 .DS_Store
