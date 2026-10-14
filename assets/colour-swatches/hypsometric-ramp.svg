@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="20" viewBox="0 0 168 20" role="img" aria-label="Hypsometric ramp colour swatches">
+  <rect width="24" height="20" x="0" y="0" fill="#7E8E74"/>
+  <rect width="24" height="20" x="24" y="0" fill="#93A184"/>
+  <rect width="24" height="20" x="48" y="0" fill="#A9B195"/>
+  <rect width="24" height="20" x="72" y="0" fill="#BFBCA4"/>
+  <rect width="24" height="20" x="96" y="0" fill="#D1C9B3"/>
+  <rect width="24" height="20" x="120" y="0" fill="#DCD4C1"/>
+  <rect width="24" height="20" x="144" y="0" fill="#E6DECB"/>
+  <rect width="167" height="19" x="0.5" y="0.5" fill="none" stroke="#202124" stroke-opacity="0.45"/>
+</svg>

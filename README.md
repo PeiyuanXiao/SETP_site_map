@@ -11,16 +11,20 @@ This repository contains the R code used to create the site map for this paper. 
 ## Contents
 
 ```         
-R/
-  common.R          shared by both panels: palette, relief renderer, site symbols and
-                    their packing, type sizes, map furniture, page fitting, layer export
-  map_plateau.R     panel A: the Tibetan Plateau (Copernicus GLO-90)
-  map_shangrila.R   panel B: the Shangri-La (Copernicus GLO-30)
-data/
-  sites.csv         the sites: name, age (ka), coordinates as published, assemblage
-assets/
-  globe_locator.png
-figures/            images used in this README
+.
+├── R/
+│   ├── common.R          shared helpers: packages, paths, site data, palette, DEM cache,
+│   │                     relief renderer, site symbol packing, axes, furniture and export
+│   ├── map_plateau.R     panel A: Tibetan Plateau map from Copernicus GLO-90 and
+│   │                     Natural Earth land, rivers and lakes
+│   └── map_shangrila.R   panel B: Shangri-La detail from Copernicus GLO-30, with
+│                         WhiteboxTools-derived drainage channels
+├── data/
+│   └── sites.csv         the sites: name, age (ka), coordinates as published, assemblage
+├── assets/
+│   ├── globe_locator.png
+│   └── colour-swatches/  colour chips used in this README
+└── figures/              images used in this README
 ```
 
 ## Running
@@ -42,16 +46,17 @@ PREVIEW <- FALSE; source("R/map_plateau.R")   # panel A, final (600 dpi)
 source("R/map_shangrila.R")                   # panel B, final (600 dpi)
 ```
 
-The first run downloads its data and caches it in `data/cache/` (about 190 MB), which takes a while. Panel A reads the Copernicus GLO-90 tiles over HTTP, and GDAL warps them straight onto a 375 m grid. Panel B reads a few GLO-30 tiles, and the Natural Earth rivers and lakes are downloaded once. After that, each script takes about a minute or two.
+The first run downloads its data and caches it in `data/cache/plateau/` (about 190 MB), which takes a while. Panel A reads the Copernicus GLO-90 tiles over HTTP, uses GDAL to warp them straight onto a 375 m grid, and downloads Natural Earth land, rivers and lakes once. Panel B reads a few GLO-30 tiles and traces local drainage channels from the DEM with WhiteboxTools. After that, each script takes about a minute or two.
 
 Output, in `output/maps/`:
 
 | File | Content |
-|------------------------------------|------------------------------------|
+|----|----|
 | `map_plateau_sites_preview.png` | panel A, preview |
 | `map_plateau_sites.png` / `.pdf` | panel A, complete |
 | `map_inset_shangrila.png` / `.pdf` | panel B, complete |
-| `map_<panel>_layer_base` / `_points` / `_labels` (`.png` / `.pdf`) | each panel as three registered layers (see below) |
+| `map_plateau_layer_base` / `_points` / `_labels` (`.png` / `.pdf`) | panel A as three registered Illustrator layers |
+| `map_shangrila_layer_base` / `_points` / `_labels` (`.png` / `.pdf`) | panel B as three registered Illustrator layers |
 | `map_plateau_legend.png`, `_north_arrow.png`, `_scalebar.png` | panel A's furniture as trimmed, transparent PNGs |
 
 ## Style notes
@@ -62,24 +67,24 @@ Output, in `output/maps/`:
 
 ### Colours
 
-| Role | Hex |
-|------------------------------------|------------------------------------|
-| Hypsometric ramp, low → high | `#7E8E74` `#93A184` `#A9B195` `#BFBCA4` `#D1C9B3` `#DCD4C1` `#E6DECB` |
-| Paper | `#E9E4D8` |
-| Water | `#86A6BB` |
-| Text | `#332F29` |
-| Frame | `#202124` |
+| Role | Colour | Hex |
+|----|----|----|
+| Hypsometric ramp, low → high | ![Hypsometric ramp colour swatches](assets/colour-swatches/hypsometric-ramp.svg) | `#7E8E74` `#93A184` `#A9B195` `#BFBCA4` `#D1C9B3` `#DCD4C1` `#E6DECB` |
+| Paper | ![Paper colour swatch](assets/colour-swatches/paper.svg) | `#E9E4D8` |
+| Water | ![Water colour swatch](assets/colour-swatches/water.svg) | `#86A6BB` |
+| Text | ![Text colour swatch](assets/colour-swatches/text.svg) | `#332F29` |
+| Frame | ![Frame colour swatch](assets/colour-swatches/frame.svg) | `#202124` |
 
 Each site is drawn as a black-ringed circle, and the fill shows only its assemblage class:
 
-| Class                        | Fill      |
-|------------------------------|-----------|
-| Handaxe site                 | `#D55E00` |
-| Denisovan site               | `#AA3377` |
-| Middle Paleolithic site      | `#0072B2` |
-| Blade site                   | `#F0E442` |
-| Microblade site              | `#7B4B2A` |
-| Other Upper Paleolithic site | `#009E73` |
+| Class | Colour | Fill |
+|----|----|----|
+| Handaxe site | ![Handaxe site colour swatch](assets/colour-swatches/handaxe-site.svg) | `#D55E00` |
+| Denisovan site | ![Denisovan site colour swatch](assets/colour-swatches/denisovan-site.svg) | `#AA3377` |
+| Middle Paleolithic site | ![Middle Paleolithic site colour swatch](assets/colour-swatches/middle-paleolithic-site.svg) | `#0072B2` |
+| Blade site | ![Blade site colour swatch](assets/colour-swatches/blade-site.svg) | `#F0E442` |
+| Microblade site | ![Microblade site colour swatch](assets/colour-swatches/microblade-site.svg) | `#7B4B2A` |
+| Other Upper Paleolithic site | ![Other Upper Paleolithic site colour swatch](assets/colour-swatches/other-upper-paleolithic-site.svg) | `#009E73` |
 
 ## Data
 
